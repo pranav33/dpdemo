@@ -1,0 +1,161 @@
+.h5p-dragquestion {
+  display: block;
+}
+.h5p-dragquestion > .h5p-inner {
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% 100%;
+  margin: 0 auto;
+}
+.h5p-dragquestion .h5p-button {
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  text-align: center;
+  -moz-box-shadow: inset 0px 1px 0px 0px #ffffff;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #ffffff;
+  box-shadow: inset 0px 1px 0px 0px #ffffff;
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+  background: -moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+  background-color: #ededed;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  border-radius: 0.5em;
+  border: 1.5px solid #dcdcdc;
+  color: #777777;
+  font-family: arial;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  text-shadow: 0.1em 0.1em 0px #ffffff;
+  z-index: 4;
+  opacity: 0.9;
+}
+.h5p-dragquestion .h5p-static {
+  position: absolute;
+  z-index: 1;
+}
+.h5p-dragquestion .h5p-static.h5p-text {
+  padding: 0.25em 0.5em;
+}
+.h5p-dragquestion .h5p-static > h2 {
+  font-size: 1.5em;
+  line-height: 1.25em;
+  margin: 0;
+}
+.h5p-dragquestion .h5p-static > p {
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+  line-height: 1.25em;
+}
+.h5p-dragquestion .h5p-draggable {
+  border-radius: 0.5em;
+  border: 1px solid #dcdcdc;
+  overflow: hidden;
+  cursor: pointer;
+  position: absolute;
+  text-align: center;
+  padding: 0.5em 0.125em;
+  line-height: 1.25em;
+  background: #fff;
+  box-shadow: 0.2em 0.2em 0.2em rgba(0,0,0,0.5);
+  z-index: 3;
+}
+.h5p-dragquestion .h5p-draggable > ul {
+  text-align: left;
+  margin: 0.5em 0.5em 0.5em 2.25em;
+  padding: 0;
+}
+.h5p-dragquestion .h5p-draggable > ul > li {
+  background: transparent;
+  list-style: disc outside none;
+  padding: 0;
+  margin: 0;
+}
+.h5p-dragquestion .h5p-draggable.ui-draggable-dragging {
+  opacity: 0.85;
+  box-shadow: 0.4em 0.4em 0.4em rgba(0,0,0,0.5);
+}
+.h5p-dragquestion .h5p-draggable.ui-state-disabled {
+  opacity: 1;
+}
+.h5p-dragquestion .h5p-draggable p {
+  margin: 0;
+  padding: 0;
+}
+.h5p-dragquestion .h5p-draggable:hover {
+  border: 1px solid #aaaaaa;
+}
+
+.h5p-dragquestion .h5p-draggable.h5p-correct, .h5p-dragquestion .h5p-dropzone.h5p-correct-answer {
+  background: lightgreen;
+  color: green;
+  border: 1px solid green;
+}
+.h5p-dragquestion .h5p-draggable.h5p-wrong {
+  background: pink;
+  color: red;
+  border: 1px solid red;
+}
+.h5p-dragquestion .h5p-draggable.h5p-correct:after, .h5p-dragquestion .h5p-draggable.h5p-wrong:after {
+  font-family: 'H5PFontAwesome';
+  font-size: 1.5em;
+  font-weight: bold;
+  position: absolute;
+  right: 0.15em;
+  top: 0.15em;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+.h5p-dragquestion .h5p-draggable.h5p-correct:after {
+  content: "\2714";
+}
+.h5p-dragquestion .h5p-draggable.h5p-wrong:after {
+  content: "\f00d";
+}
+.h5p-dragquestion .h5p-dropzone {
+  z-index: 2;
+  position: absolute;
+}
+.h5p-dragquestion .h5p-dropzone > .h5p-inner {
+  padding: 2px;
+  border-radius: 0.5em;
+  background-color: #ffffff;
+  height: 100%;
+  position: relative;
+}
+.h5p-dragquestion .h5p-dropzone.h5p-has-label > .h5p-inner {
+  border-radius: 0 0.5em 0.5em 0.5em;
+}
+.h5p-dragquestion .h5p-dropzone > .h5p-inner.h5p-active {
+  padding: 0;
+  border: 2px dashed #666666;
+}
+.h5p-dragquestion .h5p-dropzone > .h5p-inner.h5p-over {
+  background: #e0e0e0;
+}
+.h5p-dragquestion .h5p-label {
+  background: none repeat scroll 0 0 rgb(255, 255, 255);
+  left: 0;
+  line-height: 1.25em;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  bottom: 100%;
+  white-space: nowrap;
+  border-radius: 0.5em 0.5em 0 0;
+}
+.h5p-dragquestion .h5p-dropzone-answer {
+  position: absolute;
+  top: 100%;
+  margin-top: 0.125em;
+  right: 0;
+  padding: 0.25em 0.625em;
+  font-size: 0.625em;
+  line-height: 100%;
+
+  border-radius: 0.5em;
+}

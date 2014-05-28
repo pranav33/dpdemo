@@ -1,0 +1,31 @@
+name = Rooms Booking Manager
+description = Manages booking for Rooms - handling main integration with Commerce
+core = 7.x
+version = 1.x-dev
+
+package = Rooms
+
+files[] = rooms_booking_manager.commerce.inc
+files[] = views/rooms_booking_manager.views.inc
+files[] = test/rooms_booking_manager_test.test
+
+dependencies[] = number
+
+dependencies[] = rooms
+dependencies[] = rooms_unit
+dependencies[] = rooms_booking
+dependencies[] = commerce_product
+dependencies[] = commerce_product_ui
+dependencies[] = commerce_price
+dependencies[] = commerce_line_item
+dependencies[] = commerce_order
+dependencies[] = commerce_order_ui
+dependencies[] = commerce_checkout
+dependencies[] = entityreference
+
+; Information added by Drupal.org packaging script on 2014-05-02
+version = "7.x-1.2"
+core = "7.x"
+project = "rooms"
+datestamp = "1399027128"
+

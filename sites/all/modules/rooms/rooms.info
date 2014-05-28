@@ -1,0 +1,19 @@
+name = Rooms
+description = Provides basic underlying functionality and configuration options used by all Rooms modules.
+core = 7.x
+version = 1.x-dev
+php = 5.3
+
+files[] = test/rooms_test.test
+
+package = Rooms
+
+dependencies[] = libraries (>=2.x)
+
+
+; Information added by Drupal.org packaging script on 2014-05-02
+version = "7.x-1.2"
+core = "7.x"
+project = "rooms"
+datestamp = "1399027128"
+

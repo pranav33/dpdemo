@@ -1,0 +1,13 @@
+.h5p-eta.h5p-element {
+  overflow: visible;
+}
+.h5p-eta .h5p-eta-input {
+  width: 100%;
+  resize: none !important;
+  font-size: 100%;
+  padding: 0;
+}
+.h5p-eta-label {
+  overflow: hidden;
+  padding: 0.375em 0.5em;
+}

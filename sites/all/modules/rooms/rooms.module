@@ -1,0 +1,513 @@
+<?php
+
+/**
+ * @file
+ * Provides basic underlying functionality and configuration options used
+ * by all Rooms modules
+ */
+
+define('ROOMS_CHILDREN_FEATURES', 'children_features');
+
+define('ROOMS_ADD', 'add');
+define('ROOMS_SUB', 'sub');
+define('ROOMS_REPLACE', 'replace');
+define('ROOMS_INCREASE', 'increase');
+define('ROOMS_DECREASE', 'decrease');
+define('ROOMS_PRICE_SINGLE_OCCUPANCY', 'single_occupancy');
+define('ROOMS_DYNAMIC_MODIFIER', 'dynamic_modifier');
+
+/**
+ * Implements hook_permission().
+ */
+function rooms_permission() {
+  $permissions = array(
+    'configure room settings' => array(
+      'title' => t('Configure Rooms'),
+      'description' => t('Allows users to manage site-wide Rooms configurations.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_libraries_info()
+ */
+function rooms_libraries_info() {
+  $libraries['rooms_fullcalendar'] = array(
+    'name' => 'Full Calendar',
+    'vendor url' => 'http://arshaw.com/fullcalendar/',
+    'download url' => 'http://www.drupalrooms.com/sites/default/files/fullcalendar-1.5.4.zip',
+    'version arguments' => array(
+      'file' => 'fullcalendar/fullcalendar.js',
+       //1.5.4
+      'pattern' => '/v(\d+\.\d+\.\d)/',
+      'lines' => 3,
+    ),
+    'path' => 'fullcalendar',
+    'files' => array(
+      'js' => array(
+        'fullcalendar.js',
+        'gcal.js',
+      ),
+      'css' => array(
+        'fullcalendar.css',
+      ),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Check if the FullCalendar Library is loaded
+ *
+ * @return bool
+ *   A boolean indicating the FullCalendar status.
+ */
+function rooms_fullcalendar_loaded() {
+  if (($library = libraries_load('rooms_fullcalendar')) && !empty($library['loaded'])) {
+    return TRUE;
+  }
+  else {
+    // Alert the authorized user/administrator to the abscence of the library.
+    drupal_set_message(t('The FullCalendar Library could not be found.
+                          Please check the installation instructions and the <a href="@status">Status Report</a>.',
+      array('@status' => url('admin/reports/status'))), 'warning');
+  }
+}
+
+/**
+ * Implements hook_requirements
+ */
+function rooms_requirements($phase) {
+  $requirements = array();
+
+  switch ($phase) {
+    case 'runtime':
+      if (!rooms_fullcalendar_loaded()) {
+        $requirements['Rooms FullCalendar Library'] = array(
+          'title' => t('Rooms FullCalendar'),
+          'description' => t('Could not load the FullCalendar Library'),
+          'value' => 'FullCalendar Missing',
+          'severity' => REQUIREMENT_ERROR,
+        );
+      } else {
+        $requirements['Rooms FullCalendar Library'] = array(
+          'title' => t('Rooms FullCalendar'),
+          'description' => t('The FullCalendar Library is installed'),
+          'value' => 'FullCalendar Installed',
+          'severity' => REQUIREMENT_OK,
+        );
+      }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implements hook_field_info().
+ */
+function rooms_field_info() {
+  return array(
+    'rooms_options' => array(
+      'label' => t('Unit Options'),
+      'description' => t('Bookable unit options.'),
+      'settings' => array(),
+      'default_widget' => 'rooms_options_combined',
+      'default_formatter' => 'rooms_options_default',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function rooms_field_is_empty($item, $field) {
+  return empty($item['name']);
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function rooms_field_widget_info() {
+  return array(
+    'rooms_options_combined' => array(
+      'label' => t('Combined text field'),
+      'description' => t(''),
+      'field types' => array('rooms_options'),
+      'settings' => array(),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function rooms_field_formatter_info() {
+  return array(
+    'rooms_options_default' => array(
+      'label' => t('Rooms Options Default'),
+      'field types' => array('rooms_options'),
+    ),
+    'rooms_options_admin' => array(
+      'label' => t('Rooms Options Administrator'),
+      'field types' => array('rooms_options'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view
+ */
+function rooms_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    case 'rooms_options_default':
+      foreach ($items as $delta => $item) {
+        $element[$delta] = array('#markup' => "{$item['quantity']} x {$item['name']}");
+      }
+      break;
+    case 'rooms_options_admin':
+      foreach ($items as $delta => $item) {
+        $element[$delta] = array('#markup' => "{$item['quantity']} x {$item['name']} - {$item['operation']} {$item['value']}");
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function rooms_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  if ($instance['widget']['type'] == 'rooms_options_combined') {
+    $element['name'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Name'),
+      '#default_value' => isset($items[$delta]['name']) ? $items[$delta]['name'] : NULL,
+      '#attributes' => array(
+        'class' => array('booking-option-name')
+      ),
+    );
+    $element['quantity'] = array(
+      '#type' => 'select',
+      '#title' => t('Quantity'),
+      '#options' => array('None', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'),
+      '#default_value' => isset($items[$delta]['quantity']) ? $items[$delta]['quantity'] : NULL,
+      '#description' => 'How many of this option should be available',
+    );
+    $price_options = rooms_price_options_options();
+    $element['operation'] = array(
+      '#type' => 'select',
+      '#title' => t('Operation'),
+      '#options' => $price_options,
+      '#default_value' => isset($items[$delta]['operation']) ? $items[$delta]['operation'] : NULL,
+    );
+    $element['value'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Value'),
+      '#size' => 10,
+      '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
+    );
+
+    $element['remove'] = array(
+      '#type' => 'submit',
+      '#value' => t('Remove'),
+      '#attributes' => array(
+        'class' => array('remove-booking-option'),
+      ),
+    );
+    $element['#attached']['js'] = array(drupal_get_path('module', 'rooms') . '/js/rooms_options_widget.js');
+
+    return $element;
+  }
+}
+
+/**
+ * Returns the available price options for booking_unit options field.
+ */
+function rooms_price_options_options() {
+  return array(
+    ROOMS_ADD => t('Add to price'),
+    ROOMS_SUB => t('Subtract from price'),
+    ROOMS_REPLACE => t('Replace price'),
+    ROOMS_INCREASE => t('Increase price by % amount'),
+    ROOMS_DECREASE => t('Decrease price by % amount'),
+  );
+}
+
+/**
+ * Utility function that returns an array with the last day of each month given a year
+ *
+ * @param $year
+ * The year to get the end of month dates for
+ *
+ * @param $calendar
+ * The calendar to use to determine eof dates
+ *
+ * @return
+ * An array keyed by months
+ */
+function rooms_end_of_month_dates($year) {
+
+  $end_of_month_dates = array();
+
+  for ($i = 1; $i<=12; $i++) {
+     $end_of_month_dates[$i] = date("t", mktime(0, 0, 0, $i, 1, $year));
+  }
+
+  return $end_of_month_dates;
+}
+
+/**
+ * Utility function - we have a few forms that need a start and end date field and we need to apply
+ * the same javascript to these forms in order to have a specific consistent behaviour and groups
+ * the form elements and javascript injection in one place.
+ *
+ * @param array $data_range_fields If you are adding extra information pass the fields first keeping
+ * in mind that any key values that are set in the function will be overidden.
+ *
+ * @return array The array holding the field definitions
+ */
+function rooms_date_range_fields($date_range_fields = array()) {
+  $date_format = str_replace('-', '/', variable_get('rooms_date_format', 'd-m-Y'));
+
+  // Create unique ids and selectors for each picker.
+  $start_date_id = drupal_html_id('datepicker-start-date');
+  $start_date_selector = '#' . $start_date_id . ' .form-text';
+
+  $end_date_id = drupal_html_id('datepicker-end-date');
+  $end_date_selector = '#' . $start_date_id . ' .form-text';
+
+  // Specify the default datepicker parameters (see date_popup_element_info())
+  $datepicker_options = array(
+    'dateFormat' => rooms_dateFormatTojQueryUIDatePickerFormat($date_format),
+    // Limit bookings to X days in advance, depending on the
+    // chosen configuration in your Rooms installation, defaults
+    // to one day in advance.
+    'minDate' => '+' . variable_get('rooms_booking_start_date', 1) . 'd',
+  );
+
+  $date_range_fields['rooms_start_date'] = array(
+    '#prefix' => '<div class="form-wrapper rooms-date-range"><div class="start-date" id="' . $start_date_id . '">',
+    '#suffix' => '</div>',
+    '#type' => 'date_popup',
+    '#title' => t('Arrival Date'),
+    '#date_type' => DATE_DATETIME,
+    '#date_format' => $date_format,
+    //'#default_value' => "$year-$month-01 00:00:00",
+    '#date_increment' => 1,
+    '#date_year_range' => '-1:+3',
+    // Default parameters defined above, with an additional parameter
+    // linking to the jQuery selector for the end datepicker.
+    '#datepicker_options' => array_merge($datepicker_options, array('endDateSelector' => $end_date_selector)),
+    '#required' => TRUE,
+  );
+
+  $date_range_fields['rooms_end_date'] = array(
+    '#prefix' => '<div class="end-date" id="'. $end_date_id .'">',
+    '#suffix' => '</div></div>',
+    '#type' => 'date_popup',
+    '#title' => t('Departure Date'),
+    '#date_type' => DATE_DATETIME,
+    '#date_format' => $date_format,
+    //'#default_value' => "$year-$month-01 00:00:00",
+    '#date_increment' => 1,
+    '#date_year_range' => '-1:+3',
+    // Default parameters defined above, with an additional parameter
+    // parameter linking to the jQuery selector for the start datepicker.
+    '#datepicker_options' => array_merge($datepicker_options, array('startDateSelector' => $start_date_selector)),
+    '#required' => TRUE,
+    '#attached' => array(
+      'css' => array(
+        drupal_get_path('module', 'rooms') . '/css/rooms_date_range_fields.css',
+      ),
+      'js' => array(
+        drupal_get_path('module', 'rooms') . '/js/rooms_date_popup.js',
+        array(
+         'data' => array(
+            'rooms' => array(
+              'roomsBookingStartDay' => variable_get('rooms_booking_start_date', 1),
+              'roomsDateFormat' => rooms_dateFormatTojQueryUIDatePickerFormat($date_format),
+
+              // Here we create a listing of all datepickers registered on the
+              // current page. This is available for use in your own custom
+              // jQuery scripts as Drupal.settings.rooms.datepickers.
+              'datepickers' => array(
+                $start_date_selector => array(
+                  'endDateSelector' => $end_date_selector,
+                ),
+              ),
+            ),
+          ),
+          'type' => 'setting',
+        ),
+      ),
+    ),
+  );
+
+  return $date_range_fields;
+}
+
+/**
+ * Transfom from PHP conventions to jQueryUI conventions for dates
+ */
+function rooms_dateFormatTojQueryUIDatePickerFormat($date_format) {
+  $chars = array(
+    // Day
+    'd' => 'dd', 'j' => 'd', 'l' => 'DD', 'D' => 'D',
+    // Month
+    'm' => 'mm', 'n' => 'm', 'F' => 'MM', 'M' => 'M',
+    // Year
+    'Y' => 'yy', 'y' => 'y',
+  );
+
+  return strtr((string)$date_format, $chars);
+}
+
+/**
+ * Create a Date object from form_state input date.
+ *
+ * @param array $form_state
+ *   The form_state of the submitted form.
+ * @param string $field_name
+ *   Date field name used to locate the date.
+ *
+ * @return
+ *   Date object for the corresponding input date, FALSE otherwise.
+ */
+function rooms_form_input_date_object($form_state, $field_name) {
+  $date_format = str_replace('-', '/', variable_get('rooms_date_format', 'd-m-Y'));
+  if (isset($form_state['input'][$field_name]['date'])) {
+    return DateTime::createFromFormat($date_format, $form_state['input'][$field_name]['date']);
+  }
+  return FALSE;
+}
+
+/**
+ * Given a form_state locate the start/end dates in the input array and
+ * instantiate and return DateTime objects.
+ */
+function rooms_form_input_get_start_end_dates($form_state) {
+  $date_format = str_replace('-', '/', variable_get('rooms_date_format', 'd-m-Y'));
+  $start = DateTime::createFromFormat($date_format, $form_state['input']['rooms_start_date']['date']);
+  $end = DateTime::createFromFormat($date_format, $form_state['input']['rooms_end_date']['date']);
+  return array($start, $end);
+}
+
+/**
+ * Given a form_state locate the start/end dates in the values array and
+ * instantiate and return DateTime objects.
+ */
+function rooms_form_values_get_start_end_dates($form_state) {
+  // As values dates has a format of year-month-day that is one of the default
+  // expected formats there is no need to explicit define format.
+  // http://www.php.net/manual/en/datetime.formats.date.php
+  $start_date = $form_state['values']['rooms_start_date'];
+  $end_date = $form_state['values']['rooms_end_date'];
+
+  // if the input format is numeric we assume that is a unixtime seconds format.
+  if (is_numeric($start_date) && is_numeric($end_date)) {
+    // the @ indicate DateTime that the format is unixtime
+    $start_date = '@' . $start_date;
+    $end_date = '@' . $end_date;
+  }
+
+  $start = new DateTime($start_date);
+  $end = new DateTime($end_date);
+
+  return array($start, $end);
+}
+
+/**
+ * Validation callback that could be reused in all the forms that need to validate
+ * dates. End date must be greater thatn start date.
+ */
+function rooms_form_start_end_dates_validate($form, &$form_state) {
+  $errors = array();
+  list($start_date, $end_date) = rooms_form_input_get_start_end_dates($form_state);
+  $today_greater = FALSE;
+  // skip if no dates are provided
+  if (empty($start_date) || empty($end_date)) {
+    form_set_error('date_range', t('Please choose dates.'));
+    return;
+  }
+
+  // in case that this value is set trigger the today greater validation
+  if (isset($form_state['today_greater_validation'])) {
+    $today_greater = TRUE;
+  }
+
+  // Check date validity
+  $errors = rooms_check_dates_validity($start_date, $end_date, $today_greater);
+
+  // For some forms as rooms_availability_pricing_update_form and
+  // rooms_availability_update_status_form we need to validate that the seleced
+  // date match with current values.
+  if (isset($form_state['values']['curr_month']) && isset($form_state['values']['curr_year'])) {
+    $curr_month = $form_state['values']['curr_month'];
+    $curr_year = $form_state['values']['curr_year'];
+    if ($start_date->format('n') != $curr_month || $end_date->format('n') != $curr_month
+      || $start_date->format('Y') != $curr_year || $end_date->format('Y') != $curr_year) {
+        $errors[] = t('Start and end date must be within the current month.');
+      }
+  }
+
+  // When there are multiples errors for the same form element Drupal only
+  // display the first. Here we concatenate to display all at once.
+  if ($errors) {
+    $error_msg = implode(' ', $errors);
+    form_set_error('date_range', $error_msg);
+  }
+}
+
+/**
+ * Checks the logical validity of date values.
+ * @param DateTime $start_date
+ *   The start date
+ * @param DateTime $end_date
+ *   The end date
+ * @param bool $today_greater
+ *   TRUE in case to enable the validation that start_date must be greater than today.
+ *
+ * @return
+ *   An array with error messages.
+ */
+function rooms_check_dates_validity(DateTime $start_date, DateTime $end_date, $today_greater = FALSE) {
+  $errors = array();
+  // end date must be greater than start date.
+  if ($end_date <= $start_date) {
+    $errors[] = t('End date must be after start date.');
+  }
+  // in case the date should be grater than today
+  if ($today_greater) {
+    $now = new DateTime();
+    $diff1 = $now->setTime(0, 0, 0)->diff($start_date);
+    if ($diff1->invert) {
+      $errors[] = t('Start date must be current or in the future.');
+    }
+  }
+  return $errors;
+}
+
+/**
+ * Alternative numeric range generator considering users that use PHP < v5.3.6
+ * and experiment the bug: https://bugs.php.net/bug.php?id=51894
+ * @param int $start
+ * @param int $end
+ */
+function rooms_range($start, $end) {
+  if (version_compare(phpversion(), '5.3.6', '<')) {
+    $range = array();
+    for ($index = $start; $index <= $end; $index++) {
+      $range[] = $index;
+    }
+    return $range;
+  }
+  else {
+    return range($start, $end, 1);
+  }
+}

@@ -1,0 +1,62 @@
+/* Booking edit form */
+.rooms-booking-form .form-actions,
+.rooms-booking-form #edit-b-status,
+.rooms-booking-form #availability-wrapper fieldset {
+  float: none;
+  clear: both;
+}
+.rooms-booking-form #edit-b-status,
+.rooms-booking-form #availability-wrapper,
+.rooms-booking-form #edit-get-availability,
+.rooms-booking-form #edit-order,
+.rooms-booking-form #edit-type {
+  margin-bottom: 15px;
+}
+.rooms-booking-form #edit-customer-wrapper {
+  float: left;
+  max-width: 400px;
+  margin-right: 20px;
+}
+.rooms-booking-form #edit-customer-wrapper .form-item-client .form-text,
+.rooms-booking-form #edit-customer-wrapper .form-item-client .field-suffix {
+  width: 45%;
+  margin-right: 4%;
+  display: inline-block;
+}
+
+.rooms-booking-form .form-wrapper {
+  clear: both;
+  padding: 0;
+  margin: 0 0 1em;
+}
+.rooms-booking-form #availability-wrapper .fieldset-description {
+  padding: 0;
+}
+.rooms-booking-form .form-item-data-group-size,
+.rooms-booking-form #rooms_booking_group_size_children_container {
+  float: left;
+  margin-right: 20px;
+  max-width: 175px;
+}
+.rooms-booking-form .form-item-data-group-size,
+.rooms-booking-form .form-item-data-group-size-children {
+  padding: 0;
+}
+.rooms-booking-form #availability-wrapper fieldset {
+  background: none;
+}
+
+/* Children discount form */
+.children-discount-form .child-discount {
+  clear: both;
+  float: none;
+}
+.children-discount-form .child-discount__age-start,
+.children-discount-form .child-discount__age-end {
+  width: 2em;
+  text-align: right;
+}
+.children-discount-form .child-discount__amount {
+  width: 3em;
+  text-align: right;
+}

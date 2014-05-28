@@ -1,0 +1,170 @@
+.h5peditor-dragquestion-wrapper {
+  position: relative;
+}
+.dragQuestion .h5peditor-dragnbar {
+  font-size: 1em;
+  overflow: hidden;
+}
+.dragQuestion .h5p-dragnbar-ul {
+  float: right;
+  margin: 0;
+  list-style: none;
+}
+.dragQuestion .h5p-dragnbar-li {
+  float: left;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.dragQuestion .h5p-dragnbar-a {
+  width: 1em;
+  line-height: 1.5em;
+  text-align: center;
+  border: 0.0625em solid #027AC6;
+  margin: 0.25em;
+  border-radius: 0.5em;
+  display: block;
+  padding: 0.25em 0.75em;
+  background: #CEE5FF;
+  color: #000;
+}
+.dragQuestion .h5p-dragnbar-a:link, .dragQuestion .h5p-dragnbar-a:visited  {
+  color: #000;
+}
+.dragQuestion .h5p-dragnbar-a:before {
+  font-family: "H5PFontAwesome";
+  content: "?";
+}
+.dragQuestion .h5p-dragnbar-a:hover {
+  text-decoration: none;
+}
+.dragQuestion .h5p-dragnbar-text-button:before {
+  font-size: 1.125em;
+  font-weight: bold;
+  content: "T";
+}
+.dragQuestion .h5p-dragnbar-image-button:before {
+  content: "\f03e";
+}
+.dragQuestion .h5p-dragnbar-dropzone-button:before {
+  content: "\f140";
+}
+
+.h5peditor-dragquestion {
+  padding: 0.5em 1em;
+}
+.h5peditor-dragquestion.h5p-ready {
+  padding: 0;
+  background-size: 100% 100%;
+  background-color: #FFFFFF;
+  position: relative;
+  border: 1px solid #73b897;
+  border-radius: 0.25em;
+  overflow: hidden;
+}
+.h5p-dq-element {
+  position: absolute;
+  overflow: hidden;
+  line-height: 1.25em;
+  z-index: 1;
+}
+.h5p-dq-element.h5p-text {
+  padding: 0.25em 0.5em;
+}
+.h5p-dq-element.h5p-draggable {
+  background: #fff;
+  box-shadow: 0.2em 0.2em 0.2em rgba(0,0,0,0.5);
+  padding: 0.5em 0.125em;
+  border-radius: 0.5em;
+  z-index: 3;
+  text-align: center;
+  border: 1px solid #dcdcdc;
+  cursor: pointer;
+}
+.h5p-draggable > ul {
+  text-align: left;
+  margin: 0.5em 0.5em 0.5em 2.25em;
+  padding: 0;
+}
+.h5p-draggable > ul > li {
+  background: transparent;
+  list-style: disc outside none;
+  padding: 0;
+  margin: 0;
+}
+.h5p-dq-element.h5p-draggable:hover {
+  border: 1px solid #aaaaaa;
+}
+.h5p-dq-element p {
+  margin: 0;
+  padding: 0;
+}
+.h5p-dq-dz {
+  position: absolute;
+  border: 2px dashed #666666;
+  background-color: #ffffff;
+  border-radius: 0.5em;
+  z-index: 2;
+}
+.h5p-dq-dz.h5p-has-label {
+  border-radius: 0 0.5em 0.5em 0.5em;
+}
+
+.h5peditor-dragquestion .h5p-moving {
+  opacity: 0.75;
+}
+
+.h5p-dq-label {
+  position: absolute;
+  bottom: 100%;
+  font-size: 0.75em;
+}
+
+.h5peditor-fluid-dialog {
+  display: none;
+  background: #e5fff2;
+  border-radius: 0.25em;
+}
+.h5peditor-fd-inner {
+  padding: 0.5em;
+}
+.h5peditor-fd-buttons {
+  overflow: hidden;
+}
+a.h5peditor-fd-button {
+  float: right;
+  background: #156f3d;
+  color:  #fff;
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+  margin: 0.5em;
+}
+a.h5peditor-fd-button:hover {
+  text-decoration: none;
+}
+.h5p-dq-dz-label {
+  background: none repeat scroll 0 0 rgb(255, 255, 255);
+  left: -2px;
+  margin-bottom: 2px;
+  line-height: 1.25em;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  bottom: 100%;
+  white-space: nowrap;
+  border-radius: 0.5em 0.5em 0 0;
+}
+.h5peditor-dynamiccheckboxes-select, .h5peditor-dynamiccheckboxes-select > li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: transparent;
+}
+.h5peditor-dynamiccheckboxes-select > li {
+  margin: 0.1em 1em;
+}
+.h5peditor-dynamiccheckboxes-select > li > .h5p-editor-label {
+  font-weight: normal;
+}
+.field.dynamicCheckboxes .h5p-selectall {
+  font-size: 0.75em;
+}

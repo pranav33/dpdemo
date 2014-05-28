@@ -1,0 +1,37 @@
+{
+  "semantics": [
+    {
+      "label": "Oppgavetekst",
+      "description": "En tekst som forteller brukeren hvordan oppgaven skal løses"
+    },
+    {
+      "label": "Tekstlinjer",
+      "entity": "tekstlinje",
+      "field": {
+        "label": "Tekstlinje",
+        "placeholder": "Oslo er hovedstaden i *Norge*",
+        "description": "Åpne felter merkes med en stjerne * foran og bak det korrekte ordet/uttrykket. Alternativer angis med en skråstrek: *Norge/Noreg*."
+      }
+    },
+    {
+      "label": "Tilbakemeldinger",
+      "default": "Du fikk @score av @total felt rett.",
+      "description": "Tekstlig tilbakemelding, tilgjengelige variabler: @score og @total. Eksempel: 'Du fikk @score av @total felt rett.'"
+    },
+    {
+      "label": "Tekst for \"Vis svar\" knapp",
+      "default": "Vis svar"
+    },
+    {
+      "label": "Tekst for \"Prøv igjen\" knapp",
+      "default": "Prøv igjen"
+    },
+    {
+      "label": "Vis \"Prøv igjen\" knapp"
+    },
+    {
+      "label": "Skill mellom store og små bokstaver",
+      "description": "Sørger for at svaret til brukeren må være nøyaktig det samme som i oppgaven."
+    }
+  ]
+}
